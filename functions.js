@@ -1,4 +1,5 @@
 function attack(x, y, w, h, kbx, kby, dir, ap){
+  //check players hit
   for(var i = 0; i < players.length; i++){
     var p = players[i];
     if(p === ap){
@@ -6,19 +7,30 @@ function attack(x, y, w, h, kbx, kby, dir, ap){
     }
     var playerRect = rect(p.x, p.y, p.w, p.h);
     var punchRect = dir == 1 ?
-      rect(x + ap.x + ap.w / 2 - w / 2, y + ap.y - h / 2, w, h) :
-      rect(-x + ap.x - ap.w / 2 - w / 2, y + ap.y - h / 2, w, h);
+      rect(x + ap.x + ap.w / 2, y + ap.y - h / 2, w, h) :
+      rect(-x + ap.x - ap.w / 2, y + ap.y - h / 2, w, h);
     if(rectOverlap(playerRect, punchRect)){
       p.xVel = kbx * dir;
       p.yVel = kby;
     }
     ctx.fillStyle = "orange";
-    ctx.fillRect(punchRect.x, punchRect.y, punchRect.w, punchRect.h);
+    ctx.fillRect(punchRect.x - punchRect.w / 2, punchRect.y - punchRect.h / 2, punchRect.w, punchRect.h);
+  }
+  //check ball hit
+  for(var i = 0; i < balls.length; i++){
+    var b = balls[i];
+    var ballRect = rect(b.x, b.y, b.w, b.h);
+    var punchRect = dir == 1 ?
+      rect(x + ap.x + ap.w / 2, y + ap.y - h / 2, w, h) :
+      rect(-x + ap.x - ap.w / 2, y + ap.y - h / 2, w, h);
+    if(rectOverlap(ballRect, punchRect)){
+      b.xVel = kbx * dir;
+      b.yVel = kby;
+    }
   }
 }
 
-
-function rect(x, y , w, h){
+function rect(x, y, w, h){
   return {
     x: x,
     y: y,
@@ -34,11 +46,10 @@ function rectOverlap(r1, r2){
   && r2.y + r2.h / 2 > r1.y - r1.h / 2;
 }
 
-function movePlayer(){
+function move(){
+  //players
   for(var i = 0; i < players.length; i++){
     var p = players[i];
-    p.y += p.yVel;
-    p.yVel += game.gravity;
     p.jumpCd--;
     p.x += p.xVel;
     if(p.xVel < 0){
@@ -47,9 +58,47 @@ function movePlayer(){
       p.xVel -= game.friction;
     }
   }
+  //ball
+  for(var i = 0; i < balls.length; i++){
+    var b = balls[i];
+    b.x += b.xVel;
+    if(b.xVel < 0){
+      b.xVel += game.friction;
+    } else if(b.xVel > 0){
+      b.xVel -= game.friction;
+    }
+  }
 }
 
 function checkFall(){
+  //players
+  for(var i = 0; i < players.length; i++){
+    var p = players[i];
+    p.y += p.yVel;
+    p.yVel += game.gravity + p.weight;
+    while(p.y + p.h / 2 > game.floor){
+      p.y--;
+      p.jumpsUsed = 0;
+    }
+  }
+  //ball
+  for(var i = 0; i < balls.length; i++){
+    var b = balls[i];
+    b.y += b.yVel;
+    b.yVel += game.gravity + b.weight;
+    while(b.y + b.h / 2 > game.floor){
+      b.y--;
+      b.onFloor = true;
+    }
+    if(b.onFloor){
+      b.yVel -= b.bounceVelLost;
+      b.yVel = - b.yVel;
+      b.onFloor = false;
+    }
+  }
+}
+
+function CheckFall(){
   for(var i = 0; i < players.length; i++){
     var p = players[i];
     while(p.y > game.floor){
@@ -109,12 +158,12 @@ function checkPlayerButtons(){
       p.dir = 1;
     }
     //punch
-    if(p.punch && !p.up && !p.down && !p.left && !p.right && p.state == "idle"){
+    if(p.punch && !p.up && !p.down && p.state == "idle"){
       p.cd = p.punchPreAttack;
       p.state = "punch";
     }
     //kick
-    if(p.kick && !p.up && !p.down && !p.left && !p.right && p.state == "idle"){
+    if(p.kick && !p.up && !p.down && !p.left && !p.right &&p.state == "idle"){
       p.cd = p.kickPreAttack;
       p.state = "kick";
     }

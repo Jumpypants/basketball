@@ -3,7 +3,7 @@ var game = {
   cw: window.innerWidth - 15,
   ch: window.innerHeight - 20,
   gravity: 1,
-  friction: 2,
+  friction: 1,
   floor: window.innerHeight - 15 - 100,
   mouseX: 0,
   mouseY: 0,
