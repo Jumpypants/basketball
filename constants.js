@@ -1,3 +1,7 @@
+var constants = {
+  basketRimWidth: 2
+};
+
 class player {
   constructor(dir) {
     this.w = 80;
@@ -29,10 +33,10 @@ class player {
     this.state = "idle";
     this.onFloor = false;
 
-    this.punchPreAttack = 5;
+    this.punchPreAttack = 0;
     this.punchAttackCd = 8;
 
-    this.kickPreAttack = 10;
+    this.kickPreAttack = 0;
     this.kickAttackCd = 40;
   }
   punchFunct(){
@@ -44,7 +48,7 @@ class player {
 }
 
 class ball {
-  constructor() {
+  constructor(){
     this.x = game.cw / 2;
     this.y = 100;
     this.w = 60;
@@ -54,7 +58,20 @@ class ball {
     this.yVel = 0;
 
     this.onFloor = false;
-    this.bounceVelLost = 7;
+    this.floorBounceVelLost = 7;
+    this.wallBounceVelLost = 7;
+    this.rimBounceVelLost = 3;
+  }
+}
+
+class basket {
+  constructor(x, y, dir){
+    this.x = x;
+    this.y = y;
+    this.w = 100;
+    this.h = 70;
+
+    this.dir = dir;
   }
 }
 
@@ -62,8 +79,10 @@ var players = [new player(1), new player(-1)];
 
 var balls = [new ball()];
 
+var baskets = [new basket(50, 300, 1), new basket(game.cw -50, 300, -1)];
+
 var display = {
   bgImage: document.getElementById("image"),
 };
 
-var fps = 40;
+var fps = 30;

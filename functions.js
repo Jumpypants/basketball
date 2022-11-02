@@ -50,7 +50,7 @@ function bounceBall(){
   for(var i = 0; i < balls.length; i++){
     var b = balls[i];
     if(b.onFloor){
-      b.yVel -= b.bounceVelLost;
+      b.yVel -= b.floorBounceVelLost;
       b.yVel = - b.yVel;
       b.onFloor = false;
     }
@@ -60,6 +60,7 @@ function bounceBall(){
       bounce = true;
     }
     if(bounce){
+      b.xVel += b.wallBounceVelLost;
       b.xVel = - b.xVel;
     }
     bounce = false;
@@ -68,6 +69,7 @@ function bounceBall(){
       bounce = true;
     }
     if(bounce){
+      b.xVel -= b.wallBounceVelLost;
       b.xVel = - b.xVel;
     }
   }
@@ -196,6 +198,46 @@ function checkPlayerButtons(){
     if(p.kick && !p.up && !p.down && !p.left && !p.right &&p.state == "idle"){
       p.cd = p.kickPreAttack;
       p.state = "kick";
+    }
+  }
+}
+
+function checkRimBounce(b, r){
+  br = rect(b.x, b.y, b.w, b.h);
+  var bounce = false;
+  if(rectOverlap(br, r)){
+    if(b.x > r.x){
+      b.x += constants.basketRimWidth;
+    } else {
+      b.x -= constants.basketRimWidth;
+    }
+    bounce = true;
+  }
+  if(bounce){
+    if(b.xVel > b.rimBounceVelLost){
+      b.xVel -= b.rimBounceVelLost;
+    } else if(b.xVel < -b.rimBounceVelLost){
+      b.xVel += b.rimBounceVelLost;
+    }
+
+    if(b.yVel > b.rimBounceVelLost){
+      b.yVel -= b.rimBounceVelLost;
+    } else if(b.yVel < -b.rimBounceVelLost){
+      b.yVel += b.rimBounceVelLost;
+    }
+
+    b.xVel = -b.xVel;
+    b.yVel = -b.yVel;
+  }
+}
+
+function checkBaskets(){
+  for(var i = 0; i < balls.length; i++){
+    var b = balls[i];
+    for(var j = 0; j < baskets.length; j++){
+      var ba = baskets[j];
+      checkRimBounce(b, rect(ba.x - ba.w / 2, ba.y - ba.h / 2, constants.basketRimWidth, constants.basketRimWidth));
+      checkRimBounce(b, rect(ba.x + ba.w / 2, ba.y - ba.h / 2, constants.basketRimWidth, constants.basketRimWidth));
     }
   }
 }
