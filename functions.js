@@ -46,16 +46,49 @@ function rectOverlap(r1, r2){
   && r2.y + r2.h / 2 > r1.y - r1.h / 2;
 }
 
+function bounceBall(){
+  for(var i = 0; i < balls.length; i++){
+    var b = balls[i];
+    if(b.onFloor){
+      b.yVel -= b.bounceVelLost;
+      b.yVel = - b.yVel;
+      b.onFloor = false;
+    }
+    var bounce = false;
+    while(b.x - b.w / 2 <= 0){
+      b.x++;
+      bounce = true;
+    }
+    if(bounce){
+      b.xVel = - b.xVel;
+    }
+    bounce = false;
+    while(b.x + b.w / 2 >= game.cw){
+      b.x--;
+      bounce = true;
+    }
+    if(bounce){
+      b.xVel = - b.xVel;
+    }
+  }
+}
+
 function move(){
   //players
   for(var i = 0; i < players.length; i++){
     var p = players[i];
     p.jumpCd--;
     p.x += p.xVel;
-    if(p.xVel < 0){
-      p.xVel += game.friction;
+    if(p.onFloor){
+      if(p.xVel < 0){
+        p.xVel += game.groundFriction;
+      } else if(p.xVel > 0){
+        p.xVel -= game.groundFriction;
+      }
+    } else if(p.xVel < 0){
+        p.xVel += game.airFriction;
     } else if(p.xVel > 0){
-      p.xVel -= game.friction;
+        p.xVel -= game.airFriction;
     }
   }
   //ball
@@ -63,9 +96,9 @@ function move(){
     var b = balls[i];
     b.x += b.xVel;
     if(b.xVel < 0){
-      b.xVel += game.friction;
+      b.xVel += game.airFriction;
     } else if(b.xVel > 0){
-      b.xVel -= game.friction;
+      b.xVel -= game.airFriction;
     }
   }
 }
@@ -75,25 +108,22 @@ function checkFall(){
   for(var i = 0; i < players.length; i++){
     var p = players[i];
     p.y += p.yVel;
-    p.yVel += game.gravity + p.weight;
+    p.yVel += game.gravity;
+    p.onFloor = false;
     while(p.y + p.h / 2 > game.floor){
       p.y--;
       p.jumpsUsed = 0;
+      p.onFloor = true;
     }
   }
   //ball
   for(var i = 0; i < balls.length; i++){
     var b = balls[i];
     b.y += b.yVel;
-    b.yVel += game.gravity + b.weight;
+    b.yVel += game.gravity;
     while(b.y + b.h / 2 > game.floor){
       b.y--;
       b.onFloor = true;
-    }
-    if(b.onFloor){
-      b.yVel -= b.bounceVelLost;
-      b.yVel = - b.yVel;
-      b.onFloor = false;
     }
   }
 }

@@ -24,10 +24,10 @@ class player {
 
     this.acceleration = 4;
     this.moveXMax = 12;
-    this.weight = 0.2;
 
     this.cd = 0;
     this.state = "idle";
+    this.onFloor = false;
 
     this.punchPreAttack = 5;
     this.punchAttackCd = 8;
@@ -53,7 +53,6 @@ class ball {
     this.xVel = 0;
     this.yVel = 0;
 
-    this.weight = 0.1;
     this.onFloor = false;
     this.bounceVelLost = 7;
   }
