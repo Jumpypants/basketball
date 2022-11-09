@@ -162,6 +162,13 @@ function checkAttackCd(){
           p.state = "cd";
           p.cd = p.kickAttackCd;
         }
+      case "spike":
+        p.cd--;
+        if(p.cd <= 0){
+          p.spikeFunct();
+          p.state = "cd";
+          p.cd = p.spikeAttackCd;
+        }
         break;
       case "cd":
         p.cd--;
@@ -193,14 +200,20 @@ function checkPlayerButtons(){
       p.dir = 1;
     }
     //punch
-    if(p.punch && !p.up && !p.down && p.state == "idle"){
+    if(p.punch && !p.kick && !p.up && !p.down && p.state == "idle"){
       p.cd = p.punchPreAttack;
       p.state = "punch";
     }
     //kick
-    if(p.kick && !p.up && !p.down && !p.left && !p.right &&p.state == "idle"){
+    if(p.kick && !p.punch && !p.up && !p.down && !p.left && !p.right && p.state == "idle"){
       p.cd = p.kickPreAttack;
       p.state = "kick";
+    }
+    //spike
+    if(!p.onFloor && p.punch && !p.kick && !p.up && p.down && !p.left && !p.right && p.state == "idle"){
+      p.cd = p.spikePreAttack;
+      p.state = "spike";
+      p.spikeButtonFunct();
     }
   }
 }
