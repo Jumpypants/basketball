@@ -23,3 +23,5 @@ var game = {
     m: false
   }
 };
+
+var roundObjects = [];

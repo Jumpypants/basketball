@@ -48,6 +48,7 @@ function rectOverlap(r1, r2){
 
 function bounceBall(){
   for(var i = 0; i < balls.length; i++){
+    //walls
     var b = balls[i];
     if(b.onFloor){
       b.yVel -= b.floorBounceVelLost;
@@ -72,6 +73,8 @@ function bounceBall(){
       b.xVel -= b.wallBounceVelLost;
       b.xVel = - b.xVel;
     }
+    //objects
+    checkObjectsBounce(b);
   }
 }
 
@@ -202,32 +205,51 @@ function checkPlayerButtons(){
   }
 }
 
-function checkRimBounce(b, r){
-  br = rect(b.x, b.y, b.w, b.h);
-  var bounce = false;
-  if(rectOverlap(br, r)){
-    if(b.x > r.x){
-      b.x += constants.basketRimWidth;
-    } else {
-      b.x -= constants.basketRimWidth;
+function checkObjectsBounce(b){
+  for(var i = 0; i < roundObjects.length; i++){
+    var br = rect(b.x, b.y, b.w, b.h);
+    var r = rect(roundObjects[i].x, roundObjects[i].y, roundObjects[i].w, roundObjects[i].h);
+    if(rectOverlap(br, r)){
+      var xDir = 0;
+      var yDir = 0;
+
+      if(b.xVel > 0){
+        b.xVel -= b.objectBounceVelLost;
+        xDir = -1;
+      } else if(b.xVel < 0){
+        b.xVel += b.objectBounceVelLost;
+        xDir = 1;
+      }
+
+      if(b.yVel > 0){
+        b.yVel -= b.objectBounceVelLost;
+        yDir = -1;
+      } else if(b.yVel < 0){
+        b.yVel += b.objectBounceVelLost;
+        yDir = 1;
+      }
+
+      b.xVel = -b.xVel;
+      b.yVel = -b.yVel;
+
+      while(rectOverlap(br, r)){
+        br = rect(b.x, b.y, b.w, b.h);
+        r = rect(roundObjects[i].x, roundObjects[i].y, roundObjects[i].w, roundObjects[i].h);
+        b.x += 1 * xDir;
+        b.y += 1 * yDir;
+      }
     }
-    bounce = true;
   }
-  if(bounce){
-    if(b.xVel > b.rimBounceVelLost){
-      b.xVel -= b.rimBounceVelLost;
-    } else if(b.xVel < -b.rimBounceVelLost){
-      b.xVel += b.rimBounceVelLost;
-    }
+}
 
-    if(b.yVel > b.rimBounceVelLost){
-      b.yVel -= b.rimBounceVelLost;
-    } else if(b.yVel < -b.rimBounceVelLost){
-      b.yVel += b.rimBounceVelLost;
-    }
-
-    b.xVel = -b.xVel;
-    b.yVel = -b.yVel;
+function checkScore(b, ba){
+  var br = rect(b.x, b.y, b.w, b.h);
+  var bar = rect(ba.x, ba.y - ba.h / 2 + constants.basketScoreRectYOffset, ba.w - constants.basketScoreRectWOffset, constants.basketRimWidth);
+  ctx.fillStyle = "white";
+  ctx.fillRect(bar.x - bar.w / 2, bar.y - bar.h / 2, bar.w, bar.h);
+  if(rectOverlap(br, bar) && b.yVel > 0){
+    ba.score++;
+    console.log(ba.score);
   }
 }
 
@@ -236,9 +258,30 @@ function checkBaskets(){
     var b = balls[i];
     for(var j = 0; j < baskets.length; j++){
       var ba = baskets[j];
-      checkRimBounce(b, rect(ba.x - ba.w / 2, ba.y - ba.h / 2, constants.basketRimWidth, constants.basketRimWidth));
-      checkRimBounce(b, rect(ba.x + ba.w / 2, ba.y - ba.h / 2, constants.basketRimWidth, constants.basketRimWidth));
+
+      checkScore(b, ba);
     }
+  }
+}
+
+function updateObjects(){
+  //round objects
+  roundObjects = [];
+  //rim
+  for(var i = 0; i < baskets.length; i++){
+    var ba = baskets[i];
+    roundObjects.push({
+      x: ba.x - ba.w / 2,
+      y: ba.y - ba.h / 2,
+      w: constants.basketRimWidth,
+      h: constants.basketRimWidth
+    });
+    roundObjects.push({
+      x: ba.x + ba.w / 2,
+      y: ba.y - ba.h / 2,
+      w: constants.basketRimWidth,
+      h: constants.basketRimWidth
+    });
   }
 }
 

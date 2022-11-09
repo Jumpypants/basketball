@@ -1,12 +1,14 @@
 var constants = {
-  basketRimWidth: 2
+  basketRimWidth: 2,
+  basketScoreRectWOffset: 70,
+  basketScoreRectYOffset: 2
 };
 
 class player {
-  constructor(dir) {
+  constructor(dir, x) {
     this.w = 80;
     this.h = 120;
-    this.x = game.cw / 2;
+    this.x = x;
     this.y = 100;
     this.dir = dir;
 
@@ -48,8 +50,8 @@ class player {
 }
 
 class ball {
-  constructor(){
-    this.x = game.cw / 2;
+  constructor(x){
+    this.x = x;
     this.y = 100;
     this.w = 60;
     this.h = 60;
@@ -60,7 +62,7 @@ class ball {
     this.onFloor = false;
     this.floorBounceVelLost = 7;
     this.wallBounceVelLost = 7;
-    this.rimBounceVelLost = 3;
+    this.objectBounceVelLost = 3;
   }
 }
 
@@ -72,12 +74,14 @@ class basket {
     this.h = 70;
 
     this.dir = dir;
+
+    this.score = 0;
   }
 }
 
-var players = [new player(1), new player(-1)];
+var players = [new player(1, game.cw / 2 - 200), new player(-1, game.cw / 2 + 200)];
 
-var balls = [new ball()];
+var balls = [new ball(game.cw / 2 -100), new ball(game.cw / 2 + 100)];
 
 var baskets = [new basket(50, 300, 1), new basket(game.cw -50, 300, -1)];
 
