@@ -50,12 +50,22 @@ function bounceBall(){
   for(var i = 0; i < balls.length; i++){
     //walls
     var b = balls[i];
+    var bounce = false;
+    while(b.y - b.h / 2 <= 0){
+      b.y++;
+      bounce = true;
+    }
+
+    if(bounce){
+      b.yVel = -b.yVel;
+    }
+
     if(b.onFloor){
       b.yVel -= b.floorBounceVelLost;
       b.yVel = - b.yVel;
       b.onFloor = false;
     }
-    var bounce = false;
+    bounce = false;
     while(b.x - b.w / 2 <= 0){
       b.x++;
       bounce = true;
@@ -262,8 +272,26 @@ function checkScore(b, ba){
   ctx.fillRect(bar.x - bar.w / 2, bar.y - bar.h / 2, bar.w, bar.h);
   if(rectOverlap(br, bar) && b.yVel > 0){
     ba.score++;
-    console.log(ba.score);
+    game.state = "scored";
+    game.scoreTimer = constants.scoreTimer;
   }
+}
+
+function reset(){
+  players[0].x = constants.player1X;
+  players[0].y = constants.player1Y;
+  players[0].dir = constants.player1Dir;
+  players[0].xVel = 0;
+  players[0].yVel = 0;
+
+  players[1].x = constants.player2X;
+  players[1].y = constants.player2Y;
+  players[1].dir = constants.player2Dir;
+  players[1].xVel = 0;
+  players[1].yVel = 0;
+
+  balls[0].x = constants.ballX;
+  balls[0].y = constants.ballY;
 }
 
 function checkBaskets(){
@@ -271,7 +299,6 @@ function checkBaskets(){
     var b = balls[i];
     for(var j = 0; j < baskets.length; j++){
       var ba = baskets[j];
-
       checkScore(b, ba);
     }
   }

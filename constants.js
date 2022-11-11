@@ -1,15 +1,26 @@
 var constants = {
   basketRimWidth: 2,
-  basketScoreRectWOffset: 70,
-  basketScoreRectYOffset: 2
+  basketScoreRectWOffset: 110,
+  basketScoreRectYOffset: 5,
+
+  scoreTimer: 80,
+
+  player1X: game.cw / 2 - 200,
+  player1Y: 100,
+  player1Dir: 1,
+  player2X: game.cw / 2 + 200,
+  player2Y: 100,
+  player2Dir: -1,
+  ballX: game.cw / 2,
+  ballY: 100
 };
 
 class player {
-  constructor(dir, x) {
+  constructor(dir, x, y) {
     this.w = 80;
     this.h = 120;
     this.x = x;
-    this.y = 100;
+    this.y = y;
     this.dir = dir;
 
     this.xVel = 0;
@@ -41,7 +52,7 @@ class player {
     this.kickPreAttack = 0;
     this.kickAttackCd = 40;
 
-    this.spikePreAttack = 5;
+    this.spikePreAttack = 3;
     this.spikeAttackCd = 40;
   }
   punchFunct(){
@@ -55,14 +66,14 @@ class player {
     this.yVel = 30;
   }
   spikeFunct(){
-    attack(0, 80, 100, 50, 20, 40, this.dir, this);
+    attack(0, 80, 100, 50, 15, 40, this.dir, this);
   }
 }
 
 class ball {
-  constructor(x){
+  constructor(x, y){
     this.x = x;
-    this.y = 100;
+    this.y = y;
     this.w = 60;
     this.h = 60;
 
@@ -70,6 +81,8 @@ class ball {
     this.yVel = 0;
 
     this.onFloor = false;
+    //this.rimCollision = false;
+
     this.floorBounceVelLost = 7;
     this.wallBounceVelLost = 7;
     this.objectBounceVelLost = 3;
@@ -89,14 +102,25 @@ class basket {
   }
 }
 
-var players = [new player(1, game.cw / 2 - 200), new player(-1, game.cw / 2 + 200)];
+var players = [new player(constants.player1Dir, constants.player1X, constants.player1Y), new player(constants.player2Dir, constants.player2X, constants.player2Y)];
 
-var balls = [new ball(game.cw / 2 -100), new ball(game.cw / 2 + 100)];
+var balls = [new ball(constants.ballX, constants.ballY)];
 
 var baskets = [new basket(50, 300, 1), new basket(game.cw -50, 300, -1)];
 
 var display = {
+  font: "Arial",
+
   bgImage: document.getElementById("image"),
+
+  //score
+  scoreFontSize: 40,
+  scoreCol: "white",
+
+  basketOneScoreXOffset: 30,
+  basketOneScoreYOffset: 60,
+  basketTwoScoreXOffset: -50,
+  basketTwoScoreYOffset: 60,
 };
 
 var fps = 30;

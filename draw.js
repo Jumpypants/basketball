@@ -24,3 +24,11 @@ function drawBaskets(){
     ctx.fillRect(ba.x - ba.w / 2, ba.y - ba.h / 2, ba.w, ba.h);
   }
 }
+
+function drawScore(){
+  ctx.font = "" + display.scoreFontSize + "px " + display.font;
+  ctx.fillStyle = display.scoreCol;
+
+  ctx.fillText(baskets[0].score, display.basketOneScoreXOffset, display.basketOneScoreYOffset);
+  ctx.fillText(baskets[1].score, game.cw + display.basketTwoScoreXOffset, display.basketTwoScoreYOffset);
+}

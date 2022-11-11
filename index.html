@@ -16,6 +16,26 @@ function loop(){
     case "game":
       updatePlayerButtons();
       checkPlayerButtons();
+      bounceBall();
+      move();
+      checkFall();
+      updateObjects();
+      drawBg();
+      drawPlayers();
+      drawBall();
+      drawBaskets();
+      drawScore();
+      checkAttackCd();
+            checkBaskets();
+      break;
+    case "scored":
+      if(game.scoreTimer == 0){
+        game.state = "game";
+        reset();
+      }
+      game.scoreTimer--;
+      updatePlayerButtons();
+      checkPlayerButtons();
       move();
       bounceBall();
       checkFall();
@@ -24,8 +44,7 @@ function loop(){
       drawPlayers();
       drawBall();
       drawBaskets();
-      checkAttackCd();
-      checkBaskets();
+      drawScore();
       break;
   }
 }

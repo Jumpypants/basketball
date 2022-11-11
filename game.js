@@ -6,6 +6,7 @@ var game = {
   airFriction: 0.5,
   groundFriction: 1,
   floor: window.innerHeight - 15 - 100,
+  scoreTimer: 0,
   mouseX: 0,
   mouseY: 0,
   buttons: {
